@@ -21,14 +21,14 @@ function Landing() {
       className="landing-container"
       style={{ backgroundImage: `url(${bg})` }}
     >
+      <div className="overlay"></div>
       <div className="content">
-        <h1 className="title"></h1>
+        <h1 className="title">🚀 SpaceVerse</h1>
         <p className="tagline">Explore the Universe of Possibilities ✨</p>
         <button className="enter-btn" onClick={handleLaunch}>
           Enter the Galaxy
         </button>
       </div>
-
       <img
         src={rocket}
         alt="rocket"

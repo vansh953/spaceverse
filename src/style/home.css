@@ -121,59 +121,97 @@
   background: #0096ff;
 }
 
-@media (max-width: 992px) {
-  .apod-card {
-    flex-direction: column;
-  }
-
-  .apod-left {
-    width: 100%;
-    height: auto;
-  }
-
-  .apod-right {
-    padding: 25px;
-    text-align: center;
-  }
-
-  .home-title {
-    font-size: 1.8rem;
-  }
-
-  .apod-right h2 {
-    font-size: 1.4rem;
-  }
-
-  .apod-explanation {
-    font-size: 1rem;
-  }
-
-  .button-container {
-    justify-content: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .apod-right {
-    padding: 20px;
-  }
-
-  .home-title {
-    font-size: 1.6rem;
-  }
-
-  .apod-right h2 {
-    font-size: 1.2rem;
-  }
-
-  .apod-explanation {
-    font-size: 0.95rem;
-  }
-}
 .random-btn {
   background: #11cc77;
 }
 
 .random-btn:hover {
   background: #0fa25e;
+}
+
+@media (max-width: 1024px) {
+  .home-title {
+    font-size: 1.9rem;
+  }
+  .apod-right {
+    padding: 30px;
+  }
+  .apod-right h2 {
+    font-size: 1.5rem;
+  }
+  .apod-explanation {
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 900px) {
+  .apod-card {
+    flex-direction: column;
+  }
+  .apod-left {
+    width: 100%;
+    height: auto;
+  }
+  .apod-right {
+    text-align: center;
+    padding: 25px;
+  }
+  .home-title {
+    font-size: 1.8rem;
+  }
+  .apod-right h2 {
+    font-size: 1.4rem;
+  }
+  .apod-explanation {
+    font-size: 1rem;
+  }
+  .button-container {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .apod-right {
+    padding: 22px;
+  }
+  .home-title {
+    font-size: 1.6rem;
+  }
+  .apod-right h2 {
+    font-size: 1.25rem;
+  }
+  .apod-explanation {
+    font-size: 0.95rem;
+  }
+  .btn {
+    padding: 8px 14px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 420px) {
+  .apod-card {
+    border-radius: 14px;
+  }
+  .apod-right {
+    padding: 18px;
+  }
+  .home-title {
+    font-size: 1.5rem;
+  }
+  .apod-right h2 {
+    font-size: 1.1rem;
+  }
+  .apod-explanation {
+    font-size: 0.9rem;
+  }
+  .button-container {
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn {
+    width: 100%;
+    max-width: 250px;
+  }
 }

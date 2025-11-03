@@ -59,6 +59,7 @@
   padding: 20px;
   z-index: 1;
 }
+
 .globe-wrapper {
   width: 100%;
   height: calc(100vh - 56px);
@@ -68,6 +69,7 @@
   overflow: hidden;
   background: rgba(0,0,0,0.25);
 }
+
 .earth-right {
   width: 20%;
   display: flex;
@@ -77,6 +79,7 @@
   background: linear-gradient(rgba(0,0,0,0.35), rgba(0,0,0,0.6));
   z-index: 2;
 }
+
 .quake-card {
   background: rgba(0,0,0,0.8);
   border-radius: 12px;
@@ -92,8 +95,14 @@
   color: #ff6b6b;
   font-size: 0.95rem;
 }
-.quake-card p { color: #fff; margin-bottom: 4px; }
-.quake-card span { color: #bfefff; font-size: 0.8rem; }
+.quake-card p {
+  color: #fff;
+  margin-bottom: 4px;
+}
+.quake-card span {
+  color: #bfefff;
+  font-size: 0.8rem;
+}
 
 .popup {
   position: absolute;
@@ -121,7 +130,9 @@
   font-weight: 600;
   transition: background 0.2s;
 }
-.view-btn:hover { background: #009acd; }
+.view-btn:hover {
+  background: #009acd;
+}
 .close-btn {
   margin-left: 10px;
   background: #ff4d4d;
@@ -135,8 +146,10 @@
 
 .details-modal {
   position: fixed;
-  top: 0; left: 0;
-  width: 100%; height: 100%;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
   background: rgba(0,0,0,0.75);
   display: flex;
   justify-content: center;
@@ -168,8 +181,88 @@
   cursor: pointer;
 }
 
+@media (max-width: 1024px) {
+  .earth-left,
+  .earth-right {
+    width: 25%;
+    padding: 16px;
+  }
+  .earth-center {
+    width: 50%;
+  }
+  .stat-box h3 {
+    font-size: 0.9rem;
+  }
+  .stat-box p {
+    font-size: 1rem;
+  }
+  .quake-card h4 {
+    font-size: 0.9rem;
+  }
+}
+
 @media (max-width: 860px) {
-  .earth-layout { flex-direction: column; }
-  .earth-left, .earth-center, .earth-right { width: 100%; padding: 14px; }
-  .globe-wrapper { height: 60vh; }
+  .earth-layout {
+    flex-direction: column;
+    height: auto;
+  }
+  .earth-left,
+  .earth-center,
+  .earth-right {
+    width: 100%;
+    padding: 14px;
+  }
+  .globe-wrapper {
+    height: 60vh;
+  }
+  .quake-card,
+  .stat-box {
+    max-width: 90%;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .earth-layout {
+    flex-direction: column;
+  }
+  .earth-left,
+  .earth-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 10px;
+  }
+  .stat-box,
+  .quake-card {
+    flex: 1 1 45%;
+    padding: 10px;
+  }
+  .globe-wrapper {
+    height: 50vh;
+  }
+  .popup {
+    width: 90%;
+    font-size: 0.9rem;
+  }
+  .details-content {
+    width: 90%;
+    padding: 16px;
+  }
+}
+
+@media (max-width: 400px) {
+  .stat-box,
+  .quake-card {
+    flex: 1 1 100%;
+  }
+  .popup {
+    bottom: 10px;
+    padding: 10px;
+  }
+  .view-btn,
+  .close-btn {
+    padding: 5px 10px;
+  }
 }

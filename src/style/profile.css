@@ -129,7 +129,6 @@
     width: 80%;
     padding: 25px;
   }
-
   .profile-card h2 {
     font-size: 1.7rem;
   }
@@ -140,16 +139,13 @@
     width: 90%;
     padding: 25px;
   }
-
   .profile-card h2 {
     font-size: 1.5rem;
   }
-
   .profile-pic {
     width: 100px;
     height: 100px;
   }
-
   .profile-card button {
     font-size: 0.9rem;
     flex: 1 1 100%;
@@ -160,41 +156,44 @@
   .profile-container {
     padding: 20px 10px;
   }
-
   .profile-card {
     width: 100%;
     padding: 20px;
     border-radius: 15px;
   }
-
   .profile-card h2 {
     font-size: 1.3rem;
   }
-
   .profile-card label {
     font-size: 0.85rem;
   }
-
   .profile-card input,
   .profile-card select,
   .profile-card textarea {
     font-size: 0.9rem;
     padding: 8px;
   }
-
   .profile-pic {
     width: 85px;
     height: 85px;
   }
-
   .btn-row {
     flex-direction: column;
     gap: 8px;
   }
-
   .profile-card button {
     font-size: 0.85rem;
     padding: 8px 16px;
     width: 100%;
+  }
+}
+
+@media (min-width: 1200px) {
+  .profile-card {
+    max-width: 520px;
+    padding: 40px;
+  }
+  .profile-card h2 {
+    font-size: 2rem;
   }
 }
