@@ -1,0 +1,182 @@
+.landing-container {
+  position: relative;
+  height: 100vh;
+  width: 100%;
+  background-image: url("../assets/bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: repeat;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  padding: 20px;
+  animation: moveSpace 60s linear infinite;
+}
+
+@keyframes moveSpace {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: -4000px 4000px;
+  }
+}
+
+.content {
+  z-index: 2;
+}
+
+.title {
+  font-size: 3rem;
+  letter-spacing: 3px;
+  color: #00bfff;
+  text-shadow: 0 0 20px #0077ff;
+  margin-bottom: 10px;
+}
+
+.tagline {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #aad7ff;
+}
+
+.enter-btn {
+  background: linear-gradient(45deg, #0077ff, #00bfff);
+  border: none;
+  color: white;
+  padding: 14px 35px;
+  font-size: 1.2rem;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px #00bfff;
+}
+
+.enter-btn:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 20px #00bfff;
+}
+
+.rocket {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 120px;
+  transition: transform 2s ease-in-out;
+}
+
+.launch {
+  animation: diagonalFull 2s ease-in forwards;
+}
+
+@keyframes diagonalFull {
+  0% {
+    transform: translate(0, 0) rotate(0deg);
+  }
+  100% {
+    transform: translate(95vw, -95vh) rotate(45deg);
+  }
+}
+
+@media (max-width: 1200px) {
+  .title {
+    font-size: 2.8rem;
+  }
+  .tagline {
+    font-size: 1.1rem;
+  }
+  .enter-btn {
+    padding: 12px 30px;
+    font-size: 1.05rem;
+  }
+  .rocket {
+    width: 100px;
+  }
+}
+
+@media (max-width: 992px) {
+  .title {
+    font-size: 2.4rem;
+  }
+  .tagline {
+    font-size: 1rem;
+  }
+  .enter-btn {
+    padding: 12px 28px;
+    font-size: 1rem;
+  }
+  .rocket {
+    width: 90px;
+  }
+}
+
+@media (max-width: 768px) {
+  .title {
+    font-size: 2rem;
+    letter-spacing: 2px;
+  }
+  .tagline {
+    font-size: 0.95rem;
+  }
+  .enter-btn {
+    padding: 10px 25px;
+    font-size: 0.9rem;
+  }
+  .rocket {
+    width: 80px;
+  }
+}
+
+@media (max-width: 576px) {
+  .title {
+    font-size: 1.8rem;
+  }
+  .tagline {
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+  }
+  .enter-btn {
+    padding: 10px 22px;
+    font-size: 0.85rem;
+  }
+  .rocket {
+    width: 65px;
+  }
+}
+
+@media (max-width: 400px) {
+  .title {
+    font-size: 1.6rem;
+  }
+  .tagline {
+    font-size: 0.85rem;
+  }
+  .enter-btn {
+    padding: 9px 20px;
+    font-size: 0.8rem;
+  }
+  .rocket {
+    width: 55px;
+  }
+}
+
+@media (min-width: 1600px) {
+  .title {
+    font-size: 4rem;
+  }
+  .tagline {
+    font-size: 1.5rem;
+  }
+  .enter-btn {
+    padding: 18px 45px;
+    font-size: 1.3rem;
+  }
+  .rocket {
+    width: 150px;
+  }
+}
