@@ -22,7 +22,7 @@ function Landing() {
       style={{ backgroundImage: `url(${bg})` }}
     >
       <div className="content">
-        <h1 className="title">COSMOSCOPE</h1>
+        <h1 className="title"></h1>
         <p className="tagline">Explore the Universe of Possibilities ✨</p>
         <button className="enter-btn" onClick={handleLaunch}>
           Enter the Galaxy
