@@ -20,7 +20,7 @@ const Signin = () => {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("✅ Signed in successfully!");
+    
       navigate("/home");
     } catch (error) {
       console.error("Error signing in:", error.message);

@@ -13,7 +13,7 @@ function Landing() {
     setLaunch(true);
     setTimeout(() => {
       navigate("/signin");
-    }, 2600);
+    }, 1600);
   };
 
   return (
