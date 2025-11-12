@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import "../style/Project.css";
 
 function Projects() {
@@ -8,7 +8,8 @@ function Projects() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  const fetchWikipediaProjects = async (searchQuery, pageNum = 1) => {
+  // Wrap fetchWikipediaProjects in useCallback to stabilize for useEffect
+  const fetchWikipediaProjects = useCallback(async (searchQuery, pageNum = 1) => {
     try {
       const url = `https://en.wikipedia.org/w/api.php?action=query&format=json&origin=*&prop=pageimages|extracts&exintro&explaintext&piprop=original&generator=search&gsrsearch=${
         searchQuery || "space missions"
@@ -42,21 +43,24 @@ function Projects() {
       console.error("Error fetching Wikipedia data:", err);
       setHasMore(false);
     }
-  };
+  }, []);
 
+  // Initial fetch
   useEffect(() => {
     setPage(1);
     fetchWikipediaProjects("", 1);
-  }, []);
+  }, [fetchWikipediaProjects]); // ✅ added dependency
 
+  // Search query effect
   useEffect(() => {
     const delay = setTimeout(() => {
       setPage(1);
       fetchWikipediaProjects(query, 1);
     }, 700);
     return () => clearTimeout(delay);
-  }, [query]);
+  }, [query, fetchWikipediaProjects]); // ✅ added dependency
 
+  // Infinite scroll effect
   useEffect(() => {
     const handleScroll = () => {
       if (
@@ -70,11 +74,12 @@ function Projects() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [hasMore]);
+  }, [hasMore]); // ✅ dependency is correct
 
+  // Fetch more pages
   useEffect(() => {
     if (page > 1) fetchWikipediaProjects(query, page);
-  }, [page]);
+  }, [page, query, fetchWikipediaProjects]); // ✅ added dependencies
 
   const fetchFullProject = async (id) => {
     try {
@@ -133,9 +138,7 @@ function Projects() {
         )}
       </div>
 
-      {hasMore && (
-        <p className="loading-text">🚀 Loading more projects...</p>
-      )}
+      {hasMore && <p className="loading-text">🚀 Loading more projects...</p>}
 
       {selectedProject && (
         <div

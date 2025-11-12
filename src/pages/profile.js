@@ -1,17 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { getAuth, signOut } from "firebase/auth";
-import {
-  getFirestore,
-  doc,
-  getDoc,
-  setDoc,
-} from "firebase/firestore";
-import {
-  getStorage,
-  ref,
-  uploadBytes,
-  getDownloadURL,
-} from "firebase/storage";
+import { getFirestore, doc, getDoc, setDoc } from "firebase/firestore";
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useNavigate } from "react-router-dom";
 import "../style/profile.css";
 
@@ -43,11 +33,12 @@ function Profile() {
         if (userSnap.exists()) {
           setFormData((prev) => ({ ...prev, ...userSnap.data() }));
         }
-        setLoading(false);
       }
+      setLoading(false);
     };
+
     fetchProfile();
-  }, [user]);
+  }, [db, user]); // ✅ added db and user as dependencies
 
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
