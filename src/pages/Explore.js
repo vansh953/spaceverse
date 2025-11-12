@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import "../style/explore.css";
 
 function Explore() {
@@ -10,7 +10,8 @@ function Explore() {
   const [hasMore, setHasMore] = useState(true);
   const loaderRef = useRef(null);
 
-  const fetchData = async (searchQuery, currentPage = 1) => {
+  // Wrap fetchData in useCallback to make it stable for useEffect
+  const fetchData = useCallback(async (searchQuery, currentPage = 1) => {
     if (!searchQuery.trim() || loading) return;
     setLoading(true);
     try {
@@ -33,7 +34,7 @@ function Explore() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [loading]);
 
   useEffect(() => {
     if (!query.trim()) {
@@ -48,7 +49,7 @@ function Explore() {
       fetchData(query, 1);
     }, 500);
     return () => clearTimeout(delay);
-  }, [query]);
+  }, [query, fetchData]); // ✅ add fetchData
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -64,15 +65,18 @@ function Explore() {
       },
       { threshold: 1 }
     );
-    if (loaderRef.current) observer.observe(loaderRef.current);
+
+    const currentLoader = loaderRef.current; // ✅ copy ref for cleanup
+    if (currentLoader) observer.observe(currentLoader);
+
     return () => {
-      if (loaderRef.current) observer.unobserve(loaderRef.current);
+      if (currentLoader) observer.unobserve(currentLoader);
     };
   }, [results, loading, hasMore]);
 
   useEffect(() => {
     if (page > 1 && hasMore) fetchData(query, page);
-  }, [page]);
+  }, [page, fetchData, query, hasMore]); // ✅ include dependencies
 
   return (
     <div className="explore-page">
@@ -135,9 +139,7 @@ function Explore() {
               )}
               <h2>{selectedItem.title}</h2>
               <p>{selectedItem.description}</p>
-              {selectedItem.date && (
-                <p className="date">🕒 {selectedItem.date}</p>
-              )}
+              {selectedItem.date && <p className="date">🕒 {selectedItem.date}</p>}
               <button
                 className="modal-close"
                 onClick={() => setSelectedItem(null)}
