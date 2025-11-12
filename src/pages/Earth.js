@@ -1,45 +1,64 @@
 import React, { useEffect, useRef, useState } from "react";
 import Globe from "react-globe.gl";
 import "../style/earth.css";
+import { fetchCityAQI, fetchCityWeather } from "../utils/api";
 
 export default function Earth() {
+  const [city, setCity] = useState("Delhi");
+  const [cityData, setCityData] = useState({
+    aqi: null,
+    temp: null,
+    humidity: null
+  });
   const [earthquakes, setEarthquakes] = useState([]);
   const [selectedEq, setSelectedEq] = useState(null);
   const [details, setDetails] = useState(null);
-  const [stats, setStats] = useState({ co2: null, temp: null, ice: null });
   const wrapperRef = useRef();
   const [size, setSize] = useState({ w: 800, h: 600 });
 
-  useEffect(() => {
-    const fetchEarthquakeData = async () => {
-      try {
-        const res = await fetch(
-          "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson"
-        );
-        const json = await res.json();
-        const latest = (json.features || [])
-          .slice(0, 5)
-          .map((eq) => ({
-            id: eq.id,
-            lat: eq.geometry.coordinates[1],
-            lng: eq.geometry.coordinates[0],
-            depth: eq.geometry.coordinates[2],
-            mag: eq.properties.mag,
-            place: eq.properties.place,
-            time: new Date(eq.properties.time).toLocaleString(),
-            url: eq.properties.url,
-          }));
-        setEarthquakes(latest);
-      } catch (e) {
-        console.error(e);
-      }
-    };
-    const fetchStats = () =>
-      setStats({ co2: 419.2, temp: 1.12, ice: 5.45 });
+  const fetchEarthquakeData = async () => {
+    try {
+      const res = await fetch("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson");
+      const json = await res.json();
+      const latest = (json.features || [])
+        .slice(0, 5)
+        .map((eq) => ({
+          id: eq.id,
+          lat: eq.geometry.coordinates[1],
+          lng: eq.geometry.coordinates[0],
+          depth: eq.geometry.coordinates[2],
+          mag: eq.properties.mag,
+          place: eq.properties.place,
+          time: new Date(eq.properties.time).toLocaleString(),
+          url: eq.properties.url
+        }));
+      setEarthquakes(latest);
+    } catch (e) {
+      console.error(e);
+      setEarthquakes([]);
+    }
+  };
 
+  const fetchCityDetails = async (cityName) => {
+    const weatherResult = await fetchCityWeather(cityName);
+    const aqiResult = await fetchCityAQI(cityName);
+
+    setCityData({
+      aqi: aqiResult.success ? aqiResult.aqi : "N/A",
+      temp: weatherResult.success ? weatherResult.temp : null,
+      humidity: weatherResult.success ? weatherResult.humidity : null
+    });
+  };
+
+  useEffect(() => {
     fetchEarthquakeData();
-    fetchStats();
-  }, []);
+    fetchCityDetails(city);
+    const interval = setInterval(() => {
+      fetchEarthquakeData();
+      fetchCityDetails(city);
+    }, 300000);
+    return () => clearInterval(interval);
+  }, [city]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -47,7 +66,7 @@ export default function Earth() {
       const rect = wrapperRef.current.getBoundingClientRect();
       setSize({
         w: Math.max(300, Math.floor(rect.width)),
-        h: Math.max(300, Math.floor(rect.height)),
+        h: Math.max(300, Math.floor(rect.height))
       });
     };
     handleResize();
@@ -57,9 +76,7 @@ export default function Earth() {
 
   const handleViewDetails = async (eq) => {
     try {
-      const res = await fetch(
-        `https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/${eq.id}.geojson`
-      );
+      const res = await fetch(`https://earthquake.usgs.gov/earthquakes/feed/v1.0/detail/${eq.id}.geojson`);
       const data = await res.json();
       setDetails({
         place: eq.place,
@@ -67,7 +84,7 @@ export default function Earth() {
         depth: eq.depth,
         coords: `${eq.lat.toFixed(2)}, ${eq.lng.toFixed(2)}`,
         time: eq.time,
-        url: data.properties?.url || eq.url,
+        url: data.properties?.url || eq.url
       });
     } catch (err) {
       console.error(err);
@@ -77,25 +94,48 @@ export default function Earth() {
         depth: eq.depth,
         coords: `${eq.lat.toFixed(2)}, ${eq.lng.toFixed(2)}`,
         time: eq.time,
-        url: eq.url,
+        url: eq.url
       });
     }
+  };
+
+  const tempColor = (temp) => {
+    if (temp == null) return "#ccc";
+    if (temp < 10) return "#00f";
+    if (temp < 25) return "#0f0";
+    if (temp < 35) return "#ff0";
+    return "#f00";
   };
 
   return (
     <div className="earth-layout">
       <div className="earth-left">
         <div className="stat-box">
-          <h3>CO₂ Concentration</h3>
-          <p>{stats.co2 ? `${stats.co2} ppm` : "Loading..."}</p>
+          <h3>🏙️ City: {city}</h3>
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="Enter city"
+            className="city-input"
+          />
         </div>
+
         <div className="stat-box">
-          <h3>Global Temperature</h3>
-          <p>{stats.temp ? `${stats.temp} °C` : "Loading..."}</p>
+          <h3>🌀 AQI</h3>
+          <p>{cityData.aqi !== null ? cityData.aqi : "Loading..."}</p>
         </div>
+
         <div className="stat-box">
-          <h3>Arctic Ice Extent</h3>
-          <p>{stats.ice ? `${stats.ice} M km²` : "Loading..."}</p>
+          <h3>🌡️ Temperature</h3>
+          <p style={{ color: tempColor(cityData.temp) }}>
+            {cityData.temp !== null ? `${cityData.temp} °C` : "N/A"}
+          </p>
+        </div>
+
+        <div className="stat-box">
+          <h3>💧 Humidity</h3>
+          <p>{cityData.humidity !== null ? `${cityData.humidity}%` : "N/A"}</p>
         </div>
       </div>
 
@@ -124,18 +164,10 @@ export default function Earth() {
           <div className="popup">
             <h4>{selectedEq.place}</h4>
             <p>Magnitude: {selectedEq.mag}</p>
-            <button
-              className="view-btn"
-              onClick={() => handleViewDetails(selectedEq)}
-            >
+            <button className="view-btn" onClick={() => handleViewDetails(selectedEq)}>
               View Details
             </button>
-            <button
-              className="close-btn"
-              onClick={() => setSelectedEq(null)}
-            >
-              ×
-            </button>
+            <button className="close-btn" onClick={() => setSelectedEq(null)}>×</button>
           </div>
         )}
       </div>
@@ -162,15 +194,8 @@ export default function Earth() {
             <p><strong>Depth:</strong> {details.depth} km</p>
             <p><strong>Coordinates:</strong> {details.coords}</p>
             <p><strong>Time:</strong> {details.time}</p>
-            <a href={details.url} target="_blank" rel="noreferrer">
-              View on USGS Website
-            </a>
-            <button
-              className="close-modal"
-              onClick={() => setDetails(null)}
-            >
-              Close
-            </button>
+            <a href={details.url} target="_blank" rel="noreferrer">View on USGS Website</a>
+            <button className="close-modal" onClick={() => setDetails(null)}>Close</button>
           </div>
         </div>
       )}

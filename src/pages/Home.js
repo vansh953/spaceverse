@@ -1,110 +1,93 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import Globe from "react-globe.gl";
 import "../style/home.css";
 
-const Home = () => {
-  const [apod, setApod] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export default function Home() {
+  const globeRefs = useRef([]);
+  const [isPaused, setIsPaused] = useState(false);
+  const [selectedPlanet, setSelectedPlanet] = useState(null);
 
-  const apiKey = "FxIeEJ1RgbQCVNhaV4NfydbDcNj5mhEKwjmHaSJE";
+  const planetConfigs = [
+    { name: "Mercury", radius: 3, speed: 0.7, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/mercury.jpg" },
+    { name: "Venus", radius: 5, speed: 0.6, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/venus.jpg" },
+    { name: "Earth", radius: 7, speed: 0.5, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/earth_daymap.jpg" },
+    { name: "Mars", radius: 9, speed: 0.45, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/mars.jpg" },
+    { name: "Jupiter", radius: 13, speed: 0.35, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/jupiter.jpg" },
+    { name: "Saturn", radius: 17, speed: 0.3, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/saturn.jpg" },
+    { name: "Uranus", radius: 21, speed: 0.25, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/uranus.jpg" },
+    { name: "Neptune", radius: 25, speed: 0.2, texture: "https://planet-textures.nyc3.digitaloceanspaces.com/neptune.jpg" },
+  ];
 
-  const fetchAPOD = async (url) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await fetch(url);
-      if (!res.ok) throw new Error("Failed to fetch NASA APOD");
-      const data = await res.json();
-      setApod(data);
-    } catch (err) {
-      console.error("❌ Error fetching NASA APOD:", err);
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Default - Today's APOD
   useEffect(() => {
-    fetchAPOD(`https://api.nasa.gov/planetary/apod?api_key=${apiKey}`);
-  }, []);
-
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = apod.hdurl || apod.url;
-    link.download = `${apod.title}.jpg`;
-    link.click();
-  };
-
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: apod.title,
-          text: "Check out this NASA Astronomy Picture of the Day!",
-          url: apod.url,
+    let frameId;
+    const animate = () => {
+      if (!isPaused) {
+        const time = Date.now() * 0.0002;
+        globeRefs.current.forEach((globe, i) => {
+          if (globe) {
+            const config = planetConfigs[i];
+            const angle = time * config.speed;
+            const x = Math.cos(angle) * config.radius * 15;
+            const z = Math.sin(angle) * config.radius * 15;
+            globe.style.transform = `translate3d(${x}px, 0px, ${z}px)`;
+          }
         });
-      } catch (err) {
-        console.error("Error sharing:", err);
       }
-    } else {
-      alert("Sharing not supported on this device/browser.");
+      frameId = requestAnimationFrame(animate);
+    };
+    animate();
+    return () => cancelAnimationFrame(frameId);
+  }, [isPaused]);
+
+  const handlePlanetClick = async (planetName) => {
+    try {
+      const res = await fetch(`https://api.le-systeme-solaire.net/rest/bodies/${planetName.toLowerCase()}`);
+      const data = await res.json();
+      setSelectedPlanet(data);
+    } catch (err) {
+      console.error("Planet data fetch error:", err);
     }
   };
-
-  const handleRandom = () => {
-    const randomDate = () => {
-      const start = new Date(1996, 5, 16); // APOD start date
-      const end = new Date();
-      const date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
-      return date.toISOString().split("T")[0];
-    };
-    const date = randomDate();
-    fetchAPOD(`https://api.nasa.gov/planetary/apod?api_key=${apiKey}&date=${date}`);
-  };
-
-  if (loading) return <div className="home-loading">🚀 Loading NASA Image...</div>;
-  if (error) return <div className="home-error">❌ Error: {error}</div>;
 
   return (
-    <div className="home-container">
-      <div className="apod-card">
-        <div className="apod-left">
-          {apod.media_type === "image" ? (
-            <img src={apod.url} alt={apod.title} className="apod-image" />
-          ) : (
-            <iframe
-              src={apod.url}
-              title={apod.title}
-              className="apod-video"
-              frameBorder="0"
-              allowFullScreen
-            ></iframe>
-          )}
-        </div>
-
-        <div className="apod-right">
-          <h1 className="home-title">Astronomy Picture of the Day</h1>
-          <h2>{apod.title}</h2>
-          <p className="apod-date">📅 {apod.date}</p>
-          <p className="apod-explanation">{apod.explanation}</p>
-
-          <div className="button-container">
-            <button className="btn download-btn" onClick={handleDownload}>
-              ⬇️ Download
-            </button>
-            <button className="btn share-btn" onClick={handleShare}>
-              📤 Share
-            </button>
-            <button className="btn random-btn" onClick={handleRandom}>
-              🎲 Random Image
-            </button>
+    <div className="solar-layout">
+      <h1 className="solar-title">🌞 The Solar System</h1>
+      <div className="sun" />
+      <button className="pause-btn" onClick={() => setIsPaused((p) => !p)}>
+        {isPaused ? "▶️ Play" : "⏸️ Stop"}
+      </button>
+      <div className="planets-container">
+        {planetConfigs.map((planet, i) => (
+          <div key={planet.name} className="planet-wrapper">
+            <div
+              className="planet-globe"
+              ref={(el) => (globeRefs.current[i] = el)}
+              onClick={() => handlePlanetClick(planet.name)}
+            >
+              <Globe
+                globeImageUrl={planet.texture}
+                width={80}
+                height={80}
+                backgroundColor="rgba(0,0,0,0)"
+                showAtmosphere={false}
+              />
+              <p className="planet-label">{planet.name}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+      {selectedPlanet && (
+        <div className="planet-modal">
+          <div className="modal-content">
+            <h2>{selectedPlanet.englishName}</h2>
+            <p><strong>Gravity:</strong> {selectedPlanet.gravity} m/s²</p>
+            <p><strong>Density:</strong> {selectedPlanet.density}</p>
+            <p><strong>Mass:</strong> {selectedPlanet.mass?.massValue} ×10^{selectedPlanet.mass?.massExponent} kg</p>
+            <p><strong>Discovery:</strong> {selectedPlanet.discoveryDate || "Unknown"}</p>
+            <button className="close-modal" onClick={() => setSelectedPlanet(null)}>Close</button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
-};
-
-export default Home;
-
+}

@@ -1,217 +1,152 @@
-@keyframes moveStars {
-  from {
-    background-position: 0 0, 0 0, 0 0;
-  }
-  to {
-    background-position: 10000px 5000px, 5000px 10000px, 2500px 5000px;
-  }
-}
-
-.home-container {
-  min-height: 100vh;
-  background: black;
-  background-image:
-    radial-gradient(2px 2px at 20px 30px, white, transparent),
-    radial-gradient(2px 2px at 50px 80px, #00bfff, transparent),
-    radial-gradient(1.5px 1.5px at 90px 120px, #80d0ff, transparent);
-  background-repeat: repeat;
-  background-size: 100px 100px;
-  animation: moveStars 200s linear infinite;
+body {
+  margin: 0;
+  background: radial-gradient(circle at center, #000010, #000);
   color: white;
+  overflow-x: hidden;
   font-family: "Poppins", sans-serif;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 40px 20px;
-  box-sizing: border-box;
 }
 
-.apod-card {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: space-between;
-  background: rgba(0, 0, 0, 0.8);
-  box-shadow: 0 0 25px #00bfff;
-  border-radius: 20px;
+.solar-layout {
+  position: relative;
+  min-height: 100vh;
   overflow: hidden;
-  max-width: 1200px;
-  width: 100%;
-  backdrop-filter: blur(8px);
-}
-
-.apod-left {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: black;
-}
-
-.apod-image,
-.apod-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.apod-right {
-  flex: 1;
-  padding: 40px;
-  text-align: left;
   display: flex;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
-  color: #e0f7ff;
 }
 
-.home-title {
-  font-size: 2rem;
-  color: #00bfff;
-  text-shadow: 0 0 15px #0077ff;
-  margin-bottom: 10px;
+.solar-title {
+  font-size: 2.2rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
-.apod-right h2 {
-  font-size: 1.6rem;
-  color: #aad7ff;
-  margin-bottom: 10px;
+.sun {
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #ffdd33, #ff8800);
+  box-shadow: 0 0 60px 20px rgba(255, 200, 0, 0.8);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
 }
 
-.apod-date {
-  font-size: 1rem;
-  color: #a0cfff;
-  margin-bottom: 20px;
-}
-
-.apod-explanation {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  color: #d0f4ff;
-  margin-bottom: 20px;
-}
-
-.button-container {
-  display: flex;
-  gap: 15px;
-  flex-wrap: wrap;
-}
-
-.btn {
-  background: #00bfff;
+.pause-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
+  padding: 10px 16px;
   color: white;
-  padding: 10px 18px;
   font-size: 1rem;
-  border-radius: 10px;
+  border-radius: 8px;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: background 0.3s;
+  z-index: 10;
 }
 
-.btn:hover {
-  background: #0077ff;
-  transform: scale(1.05);
+.pause-btn:hover {
+  background: rgba(255, 255, 255, 0.4);
 }
 
-.download-btn {
-  background: #00bfff;
+.planets-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
 }
 
-.share-btn {
-  background: #0096ff;
+.planet-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
-.random-btn {
-  background: #11cc77;
+.planet-globe {
+  position: absolute;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  transition: transform 0.2s ease-in-out;
 }
 
-.random-btn:hover {
-  background: #0fa25e;
+.planet-globe:hover {
+  transform: scale(1.2);
 }
 
-@media (max-width: 1024px) {
-  .home-title {
-    font-size: 1.9rem;
-  }
-  .apod-right {
-    padding: 30px;
-  }
-  .apod-right h2 {
-    font-size: 1.5rem;
-  }
-  .apod-explanation {
-    font-size: 1rem;
-  }
+.planet-label {
+  text-align: center;
+  color: #fff;
+  font-size: 0.8rem;
+  margin-top: 5px;
 }
 
-@media (max-width: 900px) {
-  .apod-card {
-    flex-direction: column;
-  }
-  .apod-left {
-    width: 100%;
-    height: auto;
-  }
-  .apod-right {
-    text-align: center;
-    padding: 25px;
-  }
-  .home-title {
-    font-size: 1.8rem;
-  }
-  .apod-right h2 {
-    font-size: 1.4rem;
-  }
-  .apod-explanation {
-    font-size: 1rem;
-  }
-  .button-container {
-    justify-content: center;
-  }
+.planet-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
 }
 
-@media (max-width: 600px) {
-  .apod-right {
-    padding: 22px;
-  }
-  .home-title {
+.modal-content {
+  background: #111;
+  padding: 20px 30px;
+  border-radius: 12px;
+  text-align: center;
+  max-width: 300px;
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+.close-modal {
+  margin-top: 10px;
+  background: #444;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.close-modal:hover {
+  background: #666;
+}
+
+@media (max-width: 768px) {
+  .solar-title {
     font-size: 1.6rem;
   }
-  .apod-right h2 {
-    font-size: 1.25rem;
+  .sun {
+    width: 90px;
+    height: 90px;
   }
-  .apod-explanation {
-    font-size: 0.95rem;
+  .pause-btn {
+    font-size: 0.9rem;
+    padding: 8px 12px;
   }
-  .btn {
-    padding: 8px 14px;
-    font-size: 0.95rem;
+  .planet-label {
+    font-size: 0.7rem;
   }
 }
 
-@media (max-width: 420px) {
-  .apod-card {
-    border-radius: 14px;
+@media (max-width: 480px) {
+  .solar-title {
+    font-size: 1.3rem;
   }
-  .apod-right {
-    padding: 18px;
+  .sun {
+    width: 70px;
+    height: 70px;
   }
-  .home-title {
-    font-size: 1.5rem;
-  }
-  .apod-right h2 {
-    font-size: 1.1rem;
-  }
-  .apod-explanation {
-    font-size: 0.9rem;
-  }
-  .button-container {
-    flex-direction: column;
-    align-items: center;
-    gap: 10px;
-  }
-  .btn {
-    width: 100%;
-    max-width: 250px;
+  .pause-btn {
+    top: 10px;
+    right: 10px;
+    font-size: 0.8rem;
   }
 }

@@ -70,6 +70,9 @@
   overflow: hidden;
   box-shadow: 0 0 15px rgba(0, 191, 255, 0.5);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: pointer;
+  position: relative;
+  z-index: 2;
 }
 
 .project-card:hover {
@@ -125,6 +128,92 @@
   z-index: 2;
 }
 
+/* Modal Styling */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 2000; /* Increased from 50 to 2000 */
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.modal-content {
+  background: rgba(20, 20, 30, 0.95);
+  color: #fff;
+  border-radius: 16px;
+  padding: 25px;
+  width: 90%;
+  max-width: 750px;
+  box-shadow: 0 0 25px rgba(0, 191, 255, 0.5);
+  text-align: center;
+  position: relative;
+  overflow-y: auto;
+  max-height: 85vh;
+  animation: popUp 0.4s ease-in-out;
+  z-index: 2001; /* Added to ensure it's above overlay and navbar */
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 15px;
+  background: transparent;
+  border: none;
+  font-size: 22px;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s ease;
+  z-index: 2002; /* Ensures ❌ stays visible */
+}
+
+
+.modal-image {
+  width: 100%;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  max-height: 350px;
+  object-fit: cover;
+}
+
+
+
+.close-btn:hover {
+  color: #00bfff;
+}
+
+.modal-description {
+  font-size: 1rem;
+  line-height: 1.6;
+  margin-top: 15px;
+  color: #d0f4ff;
+  text-align: justify;
+  white-space: pre-line;
+}
+
+@keyframes popUp {
+  from {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
 @media (max-width: 1024px) {
   .projects-title {
     font-size: 2rem;
@@ -152,6 +241,13 @@
   .project-info p {
     font-size: 0.9rem;
   }
+  .modal-content {
+    width: 95%;
+    padding: 20px;
+  }
+  .modal-description {
+    font-size: 0.95rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -171,6 +267,12 @@
     font-size: 0.9rem;
     padding: 10px 15px;
   }
+  .modal-content {
+    padding: 15px;
+  }
+  .modal-description {
+    font-size: 0.9rem;
+  }
 }
 
 @media (max-width: 360px) {
@@ -179,6 +281,9 @@
   }
   .project-info p {
     font-size: 0.8rem;
+  }
+  .modal-description {
+    font-size: 0.85rem;
   }
 }
 
@@ -192,5 +297,8 @@
   }
   .projects-title {
     font-size: 2.5rem;
+  }
+  .modal-content {
+    max-width: 900px;
   }
 }

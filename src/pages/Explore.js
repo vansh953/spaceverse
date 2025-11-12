@@ -1,42 +1,83 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../style/explore.css";
 
 function Explore() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [hasMore, setHasMore] = useState(true);
+  const loaderRef = useRef(null);
+
+  const fetchData = async (searchQuery, currentPage = 1) => {
+    if (!searchQuery.trim() || loading) return;
+    setLoading(true);
+    try {
+      const res = await fetch(
+        `https://images-api.nasa.gov/search?q=${searchQuery}&page=${currentPage}`
+      );
+      const data = await res.json();
+      const newItems = data.collection.items || [];
+
+      if (newItems.length === 0) {
+        setHasMore(false);
+      } else {
+        setResults((prev) =>
+          currentPage === 1 ? newItems : [...prev, ...newItems]
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching NASA data:", error);
+      setHasMore(false);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!query.trim()) {
       setResults([]);
+      setPage(1);
+      setHasMore(true);
       return;
     }
-
     const delay = setTimeout(() => {
-      const fetchData = async () => {
-        setLoading(true);
-        try {
-          const res = await fetch(`https://images-api.nasa.gov/search?q=${query}`);
-          const data = await res.json();
-          setResults(data.collection.items || []);
-        } catch (error) {
-          console.error("Error fetching NASA data:", error);
-        } finally {
-          setLoading(false);
-        }
-      };
-      fetchData();
+      setPage(1);
+      setHasMore(true);
+      fetchData(query, 1);
     }, 500);
-
     return () => clearTimeout(delay);
   }, [query]);
 
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (
+          entries[0].isIntersecting &&
+          !loading &&
+          hasMore &&
+          results.length > 0
+        ) {
+          setPage((prev) => prev + 1);
+        }
+      },
+      { threshold: 1 }
+    );
+    if (loaderRef.current) observer.observe(loaderRef.current);
+    return () => {
+      if (loaderRef.current) observer.unobserve(loaderRef.current);
+    };
+  }, [results, loading, hasMore]);
+
+  useEffect(() => {
+    if (page > 1 && hasMore) fetchData(query, page);
+  }, [page]);
+
   return (
     <div className="explore-page">
-      <div className="star-layer"></div>
       <div className="explore-overlay">
         <h1 className="explore-title">✨ Explore the Multiverse ✨</h1>
-
         <div className="search-bar">
           <input
             type="text"
@@ -47,34 +88,65 @@ function Explore() {
         </div>
 
         {loading && <p className="loading-text">🌠 Searching the cosmos...</p>}
-
         <div className="results-grid">
           {results.map((item, index) => {
             const data = item.data[0];
             const image = item.links ? item.links[0].href : "";
-            const title = data.title;
-            const desc = data.description?.slice(0, 120) || "No description available";
-            const nasaLink = data.nasa_id
-              ? `https://images.nasa.gov/details-${data.nasa_id}`
-              : "#";
-
             return (
-              <a
-                href={nasaLink}
-                target="_blank"
-                rel="noopener noreferrer"
+              <div
                 className="result-card"
                 key={index}
+                onClick={() =>
+                  setSelectedItem({
+                    title: data.title,
+                    description: data.description || "No description available.",
+                    image,
+                    date: data.date_created,
+                  })
+                }
               >
-                <img src={image} alt={title} />
+                <img src={image} alt={data.title} />
                 <div className="card-info">
-                  <h3>{title}</h3>
-                  <p>{desc}...</p>
+                  <h3>{data.title}</h3>
+                  <p>
+                    {data.description
+                      ? data.description.substring(0, 120) + "..."
+                      : "No description available"}
+                  </p>
                 </div>
-              </a>
+              </div>
             );
           })}
         </div>
+
+        {hasMore ? (
+          <div ref={loaderRef} className="loading-trigger"></div>
+        ) : (
+          results.length > 0 && (
+            <p className="loading-text">🚀 End of cosmic results.</p>
+          )
+        )}
+
+        {selectedItem && (
+          <div className="modal-overlay">
+            <div className="modal-content">
+              {selectedItem.image && (
+                <img src={selectedItem.image} alt={selectedItem.title} />
+              )}
+              <h2>{selectedItem.title}</h2>
+              <p>{selectedItem.description}</p>
+              {selectedItem.date && (
+                <p className="date">🕒 {selectedItem.date}</p>
+              )}
+              <button
+                className="modal-close"
+                onClick={() => setSelectedItem(null)}
+              >
+                ✖
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
