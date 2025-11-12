@@ -62,7 +62,7 @@ export default function Home() {
         <input
           type="range"
           min="0.1"
-          max="3"
+          max="5"
           step="0.01"
           value={speedMultiplier}
           onChange={(e) => setSpeedMultiplier(parseFloat(e.target.value))}
