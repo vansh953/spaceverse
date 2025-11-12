@@ -6,9 +6,10 @@ import { fetchCityAQI, fetchCityWeather } from "../utils/api";
 export default function Earth() {
   const [city, setCity] = useState("Delhi");
   const [cityData, setCityData] = useState({
-    aqi: null,
-    temp: null,
-    humidity: null
+    aqi: "Loading...",
+    temp: "Loading...",
+    humidity: "Loading...",
+    condition: "Loading..."
   });
   const [earthquakes, setEarthquakes] = useState([]);
   const [selectedEq, setSelectedEq] = useState(null);
@@ -34,19 +35,20 @@ export default function Earth() {
         }));
       setEarthquakes(latest);
     } catch (e) {
-      console.error(e);
+      console.error("Earthquake data error:", e);
       setEarthquakes([]);
     }
   };
 
   const fetchCityDetails = async (cityName) => {
-    const weatherResult = await fetchCityWeather(cityName);
-    const aqiResult = await fetchCityAQI(cityName);
+    const weather = await fetchCityWeather(cityName);
+    const aqi = await fetchCityAQI(cityName);
 
     setCityData({
-      aqi: aqiResult.success ? aqiResult.aqi : "N/A",
-      temp: weatherResult.success ? weatherResult.temp : null,
-      humidity: weatherResult.success ? weatherResult.humidity : null
+      aqi: aqi.success ? aqi.aqi : "N/A",
+      temp: weather.success ? `${weather.temp.toFixed(1)}` : "N/A",
+      humidity: weather.success ? `${weather.humidity}` : "N/A",
+      condition: weather.success ? weather.condition : "N/A"
     });
   };
 
@@ -87,7 +89,6 @@ export default function Earth() {
         url: data.properties?.url || eq.url
       });
     } catch (err) {
-      console.error(err);
       setDetails({
         place: eq.place,
         magnitude: eq.mag,
@@ -100,10 +101,11 @@ export default function Earth() {
   };
 
   const tempColor = (temp) => {
-    if (temp == null) return "#ccc";
-    if (temp < 10) return "#00f";
-    if (temp < 25) return "#0f0";
-    if (temp < 35) return "#ff0";
+    if (temp === "N/A" || temp === "Loading...") return "#ccc";
+    const value = parseFloat(temp);
+    if (value < 10) return "#00f";
+    if (value < 25) return "#0f0";
+    if (value < 35) return "#ff0";
     return "#f00";
   };
 
@@ -120,22 +122,21 @@ export default function Earth() {
             className="city-input"
           />
         </div>
-
         <div className="stat-box">
-          <h3>🌀 AQI</h3>
-          <p>{cityData.aqi !== null ? cityData.aqi : "Loading..."}</p>
+          <h3>🌀 AQI (Air Quality)</h3>
+          <p>{cityData.aqi}</p>
         </div>
-
         <div className="stat-box">
           <h3>🌡️ Temperature</h3>
-          <p style={{ color: tempColor(cityData.temp) }}>
-            {cityData.temp !== null ? `${cityData.temp} °C` : "N/A"}
-          </p>
+          <p style={{ color: tempColor(cityData.temp) }}>{cityData.temp !== "N/A" ? `${cityData.temp} °C` : "N/A"}</p>
         </div>
-
         <div className="stat-box">
           <h3>💧 Humidity</h3>
-          <p>{cityData.humidity !== null ? `${cityData.humidity}%` : "N/A"}</p>
+          <p>{cityData.humidity !== "N/A" ? `${cityData.humidity}%` : "N/A"}</p>
+        </div>
+        <div className="stat-box">
+          <h3>☁️ Condition</h3>
+          <p>{cityData.condition}</p>
         </div>
       </div>
 
@@ -159,14 +160,11 @@ export default function Earth() {
             atmosphereAltitude={0.12}
           />
         </div>
-
         {selectedEq && (
           <div className="popup">
             <h4>{selectedEq.place}</h4>
             <p>Magnitude: {selectedEq.mag}</p>
-            <button className="view-btn" onClick={() => handleViewDetails(selectedEq)}>
-              View Details
-            </button>
+            <button className="view-btn" onClick={() => handleViewDetails(selectedEq)}>View Details</button>
             <button className="close-btn" onClick={() => setSelectedEq(null)}>×</button>
           </div>
         )}
