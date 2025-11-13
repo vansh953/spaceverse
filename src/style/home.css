@@ -36,18 +36,18 @@
 /* Planet Details Overlay */
 .planet-detail {
   position: fixed;
-  top: 0;
+  top: 60px; /* ⬅ Adjust this to match your navbar height */
   left: 0;
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 60px); /* ⬅ Leaves space for navbar */
   display: flex;
   flex-direction: row;
   background-color: rgba(0, 0, 0, 0.95);
-  z-index: 20;
+  z-index: 10; /* Keep below navbar but above main space */
   color: #fff;
   animation: fadeIn 0.5s ease;
-  overflow: hidden;
 }
+
 
 /* 3D Model Canvas Container */
 .planet-3dcanvas {
@@ -283,5 +283,17 @@
     top: 60px;
     left: 10px;
     padding: 6px 10px;
+  }
+}
+@media screen and (max-width: 768px) {
+  .planet-detail {
+    top: 70px; /* navbar space for mobile */
+    height: calc(100vh - 70px);
+  }
+}
+@media screen and (max-width: 768px) {
+  .planet-detail {
+    top: 70px; /* navbar space for mobile */
+    height: calc(100vh - 70px);
   }
 }

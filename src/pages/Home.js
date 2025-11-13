@@ -13,7 +13,7 @@ import saturnTex from "../assets/saturn.jpg";
 import uranusTex from "../assets/uranus.jpg";
 import neptuneTex from "../assets/neptune.jpg";
 
-// ✅ Planet data (same as before)
+
 const planetsData = [
   {
     name: "Sun",
@@ -186,7 +186,6 @@ const planetsData = [
   },
 ];
 
-// ✅ Single planet orbit model (same as before)
 function Planet({ data, isPaused, speedMultiplier, onClick }) {
   const meshRef = useRef();
   const [angle, setAngle] = useState(Math.random() * Math.PI * 2);
@@ -214,7 +213,6 @@ function Planet({ data, isPaused, speedMultiplier, onClick }) {
   );
 }
 
-// ✅ 3D Interactive Planet Preview component
 function PlanetPreview({ texture }) {
   const tex = useTexture(texture);
   const ref = useRef();
@@ -236,7 +234,6 @@ function PlanetPreview({ texture }) {
   );
 }
 
-// ✅ Main Home component
 export default function Home() {
   const [isPaused, setIsPaused] = useState(false);
   const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -292,7 +289,6 @@ export default function Home() {
       {selectedPlanet && (
         <div className="planet-detail">
           <div className="planet-image">
-            {/* ✅ Interactive 3D Planet instead of Image */}
             <Canvas camera={{ position: [0, 0, 3] }}>
               <ambientLight intensity={0.5} />
               <directionalLight position={[2, 2, 2]} />
