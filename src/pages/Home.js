@@ -1,6 +1,6 @@
 import React, { useRef, useState } from "react";
-import { Canvas, useFrame, useLoader } from "@react-three/fiber";
-import { OrbitControls } from "@react-three/drei";
+import { Canvas, useFrame } from "@react-three/fiber";
+import { OrbitControls, useTexture } from "@react-three/drei";
 import * as THREE from "three";
 import "../style/home.css";
 import sunTex from "../assets/sun.jpg";
@@ -13,7 +13,7 @@ import saturnTex from "../assets/saturn.jpg";
 import uranusTex from "../assets/uranus.jpg";
 import neptuneTex from "../assets/neptune.jpg";
 
-// ✅ Added Sun info just like planets
+// ✅ Planet data (same as before)
 const planetsData = [
   {
     name: "Sun",
@@ -186,11 +186,11 @@ const planetsData = [
   },
 ];
 
-// ✅ Planet Component (Now with subtle emissive shine)
+// ✅ Single planet orbit model (same as before)
 function Planet({ data, isPaused, speedMultiplier, onClick }) {
   const meshRef = useRef();
   const [angle, setAngle] = useState(Math.random() * Math.PI * 2);
-  const texture = useLoader(THREE.TextureLoader, data.texture);
+  const texture = useTexture(data.texture);
 
   useFrame(() => {
     if (!isPaused && data.distance > 0) {
@@ -214,6 +214,29 @@ function Planet({ data, isPaused, speedMultiplier, onClick }) {
   );
 }
 
+// ✅ 3D Interactive Planet Preview component
+function PlanetPreview({ texture }) {
+  const tex = useTexture(texture);
+  const ref = useRef();
+  useFrame(() => {
+    ref.current.rotation.y += 0.01;
+  });
+
+  return (
+    <mesh ref={ref}>
+      <sphereGeometry args={[1.2, 64, 64]} />
+      <meshStandardMaterial
+        map={tex}
+        emissive={"#222"}
+        emissiveIntensity={0.4}
+        metalness={0.3}
+        roughness={0.5}
+      />
+    </mesh>
+  );
+}
+
+// ✅ Main Home component
 export default function Home() {
   const [isPaused, setIsPaused] = useState(false);
   const [selectedPlanet, setSelectedPlanet] = useState(null);
@@ -269,7 +292,13 @@ export default function Home() {
       {selectedPlanet && (
         <div className="planet-detail">
           <div className="planet-image">
-            <img src={selectedPlanet.texture} alt={selectedPlanet.name} />
+            {/* ✅ Interactive 3D Planet instead of Image */}
+            <Canvas camera={{ position: [0, 0, 3] }}>
+              <ambientLight intensity={0.5} />
+              <directionalLight position={[2, 2, 2]} />
+              <PlanetPreview texture={selectedPlanet.texture} />
+              <OrbitControls enableZoom={true} />
+            </Canvas>
           </div>
           <div className="planet-info">
             <h2>{selectedPlanet.name}</h2>
