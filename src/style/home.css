@@ -15,8 +15,7 @@
 .pause-btn {
   position: absolute;
   top: 20px;
-  left: 20px; /* shifted to leftmost side */
-  transform: none; /* remove center translation */
+  left: 20px;
   padding: 12px 25px;
   background-color: #ffcc00;
   border: none;
@@ -43,14 +42,34 @@
   height: 100vh;
   display: flex;
   flex-direction: row;
-  background-color: rgba(0,0,0,0.95);
+  background-color: rgba(0, 0, 0, 0.95);
   z-index: 20;
   color: #fff;
   animation: fadeIn 0.5s ease;
   overflow: hidden;
 }
 
-/* Planet Image Panel */
+/* 3D Model Canvas Container */
+.planet-3dcanvas {
+  width: 50%;
+  height: 100%;
+  background: radial-gradient(circle, #000 60%, #111);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.planet-3dcanvas canvas {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Planet Image Fallback (if not 3D) */
 .planet-image {
   width: 50%;
   display: flex;
@@ -92,7 +111,7 @@
 
 .planet-info ul {
   font-size: 18px;
-  line-height: 2;
+  line-height: 2.2;
   margin-left: 20px;
 }
 
@@ -140,12 +159,11 @@
 .speed-slider {
   position: absolute;
   top: 80px;
-  left: 20px; /* shifted to leftmost side below the button */
-  transform: none;
+  left: 20px;
   display: flex;
   align-items: center;
   gap: 10px;
-  background-color: rgba(0,0,0,0.5);
+  background-color: rgba(0, 0, 0, 0.5);
   padding: 8px 15px;
   border-radius: 12px;
   color: #fff;
@@ -170,7 +188,7 @@
   font-weight: bold;
 }
 
-/* Media Queries for Mobile */
+/* ----------- RESPONSIVENESS ----------- */
 @media screen and (max-width: 1024px) {
   .planet-detail {
     flex-direction: column;
@@ -178,8 +196,15 @@
     overflow-y: auto;
   }
 
-  .planet-image, .planet-info {
+  .planet-image,
+  .planet-3dcanvas,
+  .planet-info {
     width: 100%;
+    height: auto;
+  }
+
+  .planet-3dcanvas {
+    height: 50vh;
   }
 
   .planet-info {
@@ -197,7 +222,7 @@
 
   .speed-slider {
     top: 70px;
-    left: 20px; /* keep visible left side on smaller devices */
+    left: 20px;
     gap: 5px;
     padding: 6px 12px;
   }
@@ -212,6 +237,10 @@
     font-size: 16px;
     padding: 10px 20px;
     left: 10px;
+  }
+
+  .planet-3dcanvas {
+    height: 45vh;
   }
 
   .planet-info h2 {
@@ -237,6 +266,10 @@
 }
 
 @media screen and (max-width: 480px) {
+  .planet-3dcanvas {
+    height: 40vh;
+  }
+
   .planet-info h2 {
     font-size: 20px;
   }
